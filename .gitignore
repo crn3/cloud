@@ -173,4 +173,20 @@ poetry.toml
 # LSP config files
 pyrightconfig.json
 
+# Editor
+.vscode/
+
+# Model weights / checkpoints
+*.pth
+*.pt
+*.ckpt
+
+# Data and generated model outputs
+data/
+models/
+
+# OS noise
+.DS_Store
+Thumbs.db
+
 # End of https://www.toptal.com/developers/gitignore/api/python

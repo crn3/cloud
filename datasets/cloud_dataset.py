@@ -108,12 +108,17 @@ class CloudDataset(Dataset):
     # x = 4 channel tensor (C, H, W) RGB (+NIR)
     # y = ground truth mask (H, W)
     def __getitem__(self, idx):
+        
         x_arr = self.open_as_array(idx, invert=self.pytorch)
+        
         # tensor expects float for inputs
-        x = torch.tensor(x_arr, dtype=torch.float32) # input image tensor (4 x H x W)
+        # x = torch.tensor(x_arr, dtype=torch.float32) # input image tensor (4 x H x W)
+        x = torch.from_numpy(x_arr).float()
         y_arr = self.open_mask(idx, add_channel_dim=False) # cloud ground truth mask (H x W)
+        
         # classification / segmentation mask should be long for loss functions
-        y = torch.tensor(y_arr, dtype=torch.int64)
+        # y = torch.tensor(y_arr, dtype=torch.int64)
+        y = torch.from_numpy(y_arr).long()
         return x, y
      
     # Returns a PIL image for visualisation
