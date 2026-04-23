@@ -1,8 +1,6 @@
-import warnings
-
 import segmentation_models_pytorch as smp
 
-from prepare_dataset import get_dataloaders
+from datasets.prepare_dataset import get_dataloaders
 from early_stopping import EarlyStopping
 
 import torch
@@ -15,11 +13,7 @@ from pytorch_toolbelt.losses import DiceLoss
 import matplotlib.pyplot as plt
 
 def main():
-    
-    
-    warnings.filterwarnings("ignore", category=FutureWarning)
 
-    
     torch.manual_seed(42)
     torch.cuda.manual_seed(42)
     
