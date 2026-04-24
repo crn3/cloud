@@ -7,8 +7,8 @@ import numpy as np
 from PIL import Image
 
 from datasets.test_dataset import TestPatchDataset, parse_patch_name
-from load_model import load_checkpoint
-from metrics import compute_metrics
+from utils.load_model import load_checkpoint
+from utils.metrics import compute_metrics
 
 
 def predict_mask(model, x, device):

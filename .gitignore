@@ -184,6 +184,12 @@ pyrightconfig.json
 # Data and generated model outputs
 data/
 models/
+comparisons/
+model_comparisons/
+onnx_models/
+patch_predictions/
+reconstructed_scenes/
+
 
 # OS noise
 .DS_Store

@@ -1,44 +1,47 @@
 from cloud_dataset import CloudDataset
 
-import random
-import torch
-import numpy as np
 from torch.utils.data import DataLoader, random_split
 import pandas as pd
-from torch.utils.data import ConcatDataset
 
 from pathlib import Path
 
-def get_dataloaders(batch_size=16, train_split=0.7, num_workers=2):
 
-# Paths
+def get_dataloaders(batch_size=16, num_workers=2):
+
+    # Paths
 
     base_path_38 = Path(r"C:\Users\racha\Desktop\Dataset\38-Cloud_training")
-    csv_path_38 = Path(r"C:\Users\racha\Desktop\Dataset\training_patches_38-cloud_nonempty.csv")
+    csv_path_38 = Path(
+        r"C:\Users\racha\Desktop\Dataset\training_patches_38-cloud_nonempty.csv"
+    )
 
-    base_path_95 = Path(r"C:\Users\racha\Desktop\Dataset\95-cloud_training_only_additional_to38-cloud")
-    csv_path_95 = Path(r"C:\Users\racha\Desktop\Dataset\95-cloud_training_only_additional_to38-cloud\training_patches_95-cloud_nonempty.csv")
+    base_path_95 = Path(
+        r"C:\Users\racha\Desktop\Dataset\95-cloud_training_only_additional_to38-cloud"
+    )
+    csv_path_95 = Path(
+        r"C:\Users\racha\Desktop\Dataset\95-cloud_training_only_additional_to38-cloud\training_patches_95-cloud_nonempty.csv"
+    )
 
     # Load datasets
 
     data_38 = CloudDataset(
-        r_dir = base_path_38 / 'train_red',
-        g_dir = base_path_38 / 'train_green',
-        b_dir = base_path_38 / 'train_blue',
-        nir_dir = base_path_38 / 'train_nir',
-        gt_dir = base_path_38 / 'train_gt',
+        r_dir=base_path_38 / "train_red",
+        g_dir=base_path_38 / "train_green",
+        b_dir=base_path_38 / "train_blue",
+        nir_dir=base_path_38 / "train_nir",
+        gt_dir=base_path_38 / "train_gt",
         pytorch=True,
-        include_nir=True
+        include_nir=True,
     )
 
     data_95 = CloudDataset(
-        r_dir = base_path_95 / 'train_red_additional_to38cloud',
-        g_dir = base_path_95 / 'train_green_additional_to38cloud',
-        b_dir = base_path_95 / 'train_blue_additional_to38cloud',
-        nir_dir = base_path_95 / 'train_nir_additional_to38cloud',
-        gt_dir = base_path_95 / 'train_gt_additional_to38cloud',
+        r_dir=base_path_95 / "train_red_additional_to38cloud",
+        g_dir=base_path_95 / "train_green_additional_to38cloud",
+        b_dir=base_path_95 / "train_blue_additional_to38cloud",
+        nir_dir=base_path_95 / "train_nir_additional_to38cloud",
+        gt_dir=base_path_95 / "train_gt_additional_to38cloud",
         pytorch=True,
-        include_nir=True
+        include_nir=True,
     )
 
     # Load non-empty patches from CSVs
@@ -81,20 +84,20 @@ def get_dataloaders(batch_size=16, train_split=0.7, num_workers=2):
     filtered_files_95 = [data_95.files[i] for i in nonempty_indices_95]
 
     data = CloudDataset(
-        r_dir = base_path_38 / 'train_red',
-        g_dir = base_path_38 / 'train_green',
-        b_dir = base_path_38 / 'train_blue',
-        nir_dir = base_path_38 / 'train_nir',
-        gt_dir = base_path_38 / 'train_gt',
+        r_dir=base_path_38 / "train_red",
+        g_dir=base_path_38 / "train_green",
+        b_dir=base_path_38 / "train_blue",
+        nir_dir=base_path_38 / "train_nir",
+        gt_dir=base_path_38 / "train_gt",
         pytorch=True,
-        include_nir=True
+        include_nir=True,
     )
 
-    # overwrite 
+    # overwrite
     data.files = filtered_files_38 + filtered_files_95
     print("Combined filtered dataset size:", len(data))
 
-    # Train/validation splitting 
+    # Train/validation splitting
 
     total = len(data)
     train_size = int(total * 0.7)
@@ -103,24 +106,21 @@ def get_dataloaders(batch_size=16, train_split=0.7, num_workers=2):
     train_ds, valid_ds = random_split(data, [train_size, valid_size])
 
     train_dl = DataLoader(
-        train_ds, 
-        batch_size=batch_size, 
-        shuffle=True, 
-        num_workers=num_workers, 
+        train_ds,
+        batch_size=batch_size,
+        shuffle=True,
+        num_workers=num_workers,
         pin_memory=True,
         persistent_workers=True,
-        prefetch_factor=2)
+        prefetch_factor=2,
+    )
 
     valid_dl = DataLoader(
-        valid_ds, 
-        batch_size=batch_size, 
-        shuffle=False, 
-        num_workers=num_workers, 
-        pin_memory=True)
+        valid_ds,
+        batch_size=batch_size,
+        shuffle=False,
+        num_workers=num_workers,
+        pin_memory=True,
+    )
 
     return train_dl, valid_dl
-
-
-
-
-

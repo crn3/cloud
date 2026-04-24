@@ -1,3 +1,12 @@
+## load full test dataset
+## optional patch limit/specific scene filter
+## makes a dataloader
+## loads both models
+## runs inference in batches
+## saves predicted patch masks for both models in timestamped folder
+## which are used to reconstruct whole scenes later
+
+
 from pathlib import Path
 import time
 import torch
@@ -6,12 +15,12 @@ import numpy as np
 from PIL import Image
 
 from datasets.test_dataset import TestPatchDataset
-from load_model import load_checkpoint
+from utils.load_model import load_checkpoint
 
 
-# =========================================================
-# CONFIG
-# =========================================================
+##############
+### CONFIG ###
+##############
 
 # To predict just one scene:
 # SCENE_FILTER = "LC08_L1TP_029041_20160720_20170222_01_T1"
@@ -28,12 +37,13 @@ BATCH_SIZE = 16
 
 ###############
 ### HELPERS ###
-############### 
+###############
+
 
 def patch_id_from_filename(filename: str) -> str:
     name = Path(filename).name
     if name.startswith("red_"):
-        return name[len("red_"):]
+        return name[len("red_") :]
     return name
 
 
@@ -41,8 +51,8 @@ def predict_batch(model, x_batch, device):
     x_batch = x_batch.to(device)
 
     with torch.no_grad():
-        logits = model(x_batch)            # [B, 2, H, W]
-        pred = torch.argmax(logits, dim=1) # [B, H, W]
+        logits = model(x_batch)  # [B, 2, H, W]
+        pred = torch.argmax(logits, dim=1)  # [B, H, W]
 
     return pred.cpu().numpy().astype(np.uint8)
 
@@ -74,9 +84,10 @@ def build_subset_indices(dataset, scene_filter=None, max_patches=None):
     return indices
 
 
-# =========================================================
-# MAIN
-# =========================================================
+############
+### MAIN ###
+############
+
 
 def main():
     device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
@@ -87,13 +98,11 @@ def main():
         g_dir=r"C:\Users\racha\Desktop\Dataset\38-Cloud_test\test_green",
         b_dir=r"C:\Users\racha\Desktop\Dataset\38-Cloud_test\test_blue",
         nir_dir=r"C:\Users\racha\Desktop\Dataset\38-Cloud_test\test_nir",
-        include_nir=True
+        include_nir=True,
     )
 
     selected_indices = build_subset_indices(
-        dataset,
-        scene_filter=SCENE_FILTER,
-        max_patches=MAX_PATCHES
+        dataset, scene_filter=SCENE_FILTER, max_patches=MAX_PATCHES
     )
 
     if not selected_indices:
@@ -101,23 +110,18 @@ def main():
 
     subset = Subset(dataset, selected_indices)
 
-    dataloader = DataLoader(
-        subset,
-        batch_size=BATCH_SIZE,
-        shuffle=False,
-        num_workers=0
-    )
+    dataloader = DataLoader(subset, batch_size=BATCH_SIZE, shuffle=False, num_workers=0)
 
     unet = load_checkpoint(
         model_path=r"C:\Users\racha\OneDrive\Desktop\cloud\cloud\models\Unet_20260413_004720\Unet.pth",
         model_type="unet",
-        device=device
+        device=device,
     )
 
     unetpp = load_checkpoint(
         model_path=r"C:\Users\racha\OneDrive\Desktop\cloud\cloud\models\UnetPlusPlus_20260413_150345\UnetPlusPlus.pth",
         model_type="unetplusplus",
-        device=device
+        device=device,
     )
 
     timestamp = time.strftime("%Y%m%d_%H%M%S")

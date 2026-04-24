@@ -1,5 +1,5 @@
 from datasets.cloud_dataset import CloudDataset
-from models.sample_unet import UNET
+from models.unet import UNET
 
 import torch
 from torch.utils.data import DataLoader, random_split

@@ -1,14 +1,14 @@
 import segmentation_models_pytorch as smp
 
 from datasets.prepare_dataset import get_dataloaders
-from early_stopping import EarlyStopping
+from utils.early_stopping import EarlyStopping
 
 import torch
 import torch.backends.cudnn as cudnn
 from torch.amp import autocast, GradScaler
 from pathlib import Path
 import time
-from training_logger import TrainingLogger
+from utils.training_logger import TrainingLogger
 from pytorch_toolbelt.losses import DiceLoss
 import matplotlib.pyplot as plt
 
